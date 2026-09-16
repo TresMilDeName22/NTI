@@ -11,7 +11,7 @@ Septiembre 16, 2026*/
 #include<winsock2.h>
 #include<ws2tcpip.h>
 
-#define PORT 9000 /*Puerto de conexión con la nube*/
+#define PORT 9500 /*Puerto de conexión con la nube*/
 
 void detonar_falla(){
     printf("\n [!] ALERTA CRÍTICA: Señal de falla recibida.\n");
@@ -36,9 +36,11 @@ int main(){
     address.sin_port = htons(PORT);
 
     //Vinculación del socket al puerto 9000
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) <0){
-        perror("Fallo en el bind");
-        exit(EXIT_FAILURE);
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR){
+        printf("Fallo en el bind. Código de error en Winsock: %d\n", WSAGetLastError());
+        closesocket(server_fd);
+        WSACleanup();
+        return 1;
     }
 
     //Escucha de conexiones entrantes
